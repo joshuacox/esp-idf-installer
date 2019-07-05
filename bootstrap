@@ -67,7 +67,7 @@ esp_dir () {
   if [ -d "$HOME/esp/xtensa-esp32-elf" ]; then
     echo 'xtensa directory exists skipping'
   else
-    curl $XTENSA_URL | tar zxvf -
+    curl -sL $XTENSA_URL | tar zxvf -
   fi
   if [ -d "$HOME/esp/esp-idf" ]; then
     cd ~/esp/esp-idf
@@ -78,12 +78,14 @@ esp_dir () {
   fi
   if [ "$NAME" == "Arch Linux" ]; then
     python2.7 -m pip install --user -r $IDF_PATH/requirements.txt
+    # arch appears to need both 2 and 3 modules installed for make to properly finish
+    python -m pip install --user -r $IDF_PATH/requirements.txt
   elif [ "$NAME" == "Debian" ]; then
     python -m pip install --user -r $IDF_PATH/requirements.txt
   fi
 }
 
-apt-get_install () {
+apt_get_install () {
   sudo apt-get update
   sudo apt-get install gcc git wget make libncurses-dev flex bison gperf python python-pip python-setuptools python-serial python-cryptography python-future python-pyparsing python-pyelftools
 }
@@ -136,11 +138,12 @@ main () {
   echo "Detected os=$NAME"
   
   if [ "$NAME" == "Arch Linux" ]; then
-    arch_install
+    #arch_install
+    echo skiparch
   elif [ "$NAME" == "Debian GNU/Linux" ]; then
-    apt-get_install
+    apt_get_install
   elif [ "$NAME" == "Ubuntu" ]; then
-    apt-get_install
+    apt_get_install
   elif [ "$NAME" == "CentOS Linux" ]; then
     yum_install
   fi
