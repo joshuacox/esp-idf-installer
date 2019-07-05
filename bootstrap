@@ -1,0 +1,154 @@
+#!/bin/sh
+: ${VERBOSITY:=0}
+set -eu
+if [ "$VERBOSITY" -gt 100 ]; then
+  set -x
+fi
+MACHINE_NAME=$(uname -m)
+if [ "$MACHINE_NAME" == "x86_64" ]; then
+: ${XTENSA_URL='https://dl.espressif.com/dl/xtensa-esp32-elf-gcc8_2_0-esp32-2019r1-linux-amd64.tar.gz'}
+else
+: ${XTENSA_URL='https://dl.espressif.com/dl/xtensa-esp32-elf-gcc8_2_0-esp32-2019r1-linux-i686.tar.gz'}
+fi
+export IDF_PATH=~/esp/esp-idf
+
+# Check if a command exists
+check_cmd () {
+  if ! type "$1" > /dev/null; then
+    echo "$1 was not found in your path!"
+    echo "To proceed please install $1 to your path and try again!"
+    exit 1
+  fi
+}
+
+# these vars are used by the following functions
+LINE_TO_ADD=''
+TARGET_FILE_FOR_ADD=$HOME/.profile
+
+check_if_line_exists()
+{
+  if [[ $VERBOSITY -gt '7' ]]; then
+    echo "Checking for '$LINE_TO_ADD'  in $TARGET_FILE_FOR_ADD"
+  fi
+  grep -qsFx "$LINE_TO_ADD" $TARGET_FILE_FOR_ADD
+}
+
+add_line_to()
+{
+  if [[ $VERBOSITY -gt '5' ]]; then
+    echo "Adding '$LINE_TO_ADD'  to $TARGET_FILE_FOR_ADD"
+  fi
+  TARGET_FILE=$TARGET_FILE_FOR_ADD
+    [ -w "$TARGET_FILE" ] || TARGET_FILE=$TARGET_FILE_FOR_ADD
+    printf "%s\n" "$LINE_TO_ADD" >> "$TARGET_FILE"
+}
+
+dotfiles_install () {
+  echo 'Adjusting dotfiles'
+  touch $HOME/.zshrc
+  touch $HOME/.bashrc
+  ESP_BIN='export PATH="$HOME/esp/xtensa-esp32-elf/bin:$PATH"'
+  LINE_TO_ADD="$(printf "export PATH=%s:\$PATH" $ESP_BIN)"
+  TARGET_FILE_FOR_ADD=$HOME/.bashrc
+  check_if_line_exists || add_line_to
+  TARGET_FILE_FOR_ADD=$HOME/.zshrc
+  check_if_line_exists || add_line_to
+  IDF_BIN='export IDF_PATH=~/esp/esp-idf'
+  LINE_TO_ADD="$(printf "export PATH=%s:\$PATH" $IDF_BIN)"
+  TARGET_FILE_FOR_ADD=$HOME/.bashrc
+  check_if_line_exists || add_line_to
+  TARGET_FILE_FOR_ADD=$HOME/.zshrc
+  check_if_line_exists || add_line_to
+}
+
+esp_dir () {
+  mkdir -p ~/esp
+  cd ~/esp
+  if [ -d "$HOME/esp/xtensa-esp32-elf" ]; then
+    echo 'xtensa directory exists skipping'
+  else
+    curl $XTENSA_URL | tar zxvf -
+  fi
+  if [ -d "$HOME/esp/esp-idf" ]; then
+    cd ~/esp/esp-idf
+    git pull
+    git submodule update --init
+  else
+    git clone --recursive https://github.com/espressif/esp-idf.git
+  fi
+  if [ "$NAME" == "Arch Linux" ]; then
+    python2.7 -m pip install --user -r $IDF_PATH/requirements.txt
+  elif [ "$NAME" == "Debian" ]; then
+    python -m pip install --user -r $IDF_PATH/requirements.txt
+  fi
+}
+
+apt-get_install () {
+  sudo apt-get update
+  sudo apt-get install gcc git wget make libncurses-dev flex bison gperf python python-pip python-setuptools python-serial python-cryptography python-future python-pyparsing python-pyelftools
+}
+
+yum_install () {
+  sudo yum update
+  sudo yum install gcc git wget make ncurses-devel flex bison gperf python python2-cryptography
+}
+
+bauer_build () {
+  TMP=$(mktemp -d)
+  PKG_TO_BUILD=$1
+  cd $TMP
+  bauerbill --aur -S $PKG_TO_BUILD
+  cd build
+  ./download.sh
+  ./build.sh
+  cd
+  rm -Rf $TMP
+  unset TMP
+}
+
+arch_install () {
+  check_cmd powerpill
+  check_cmd bauerbill
+  echo Starting Arch installation
+  ARCH_PKGS_INSTALL='gcc git make ncurses flex bison gperf python2-pyserial python2-cryptography python2-future python2-pyparsing python2-pyelftools'
+  sudo pacman -Sy
+  sudo pacman -Su
+  sudo powerpill -S --needed $ARCH_PKGS_INSTALL
+  bauer_build ncurses5-compat-libs
+  bauer_build lib32-ncurses5-compat-libs
+}
+
+groupie () {
+  if [ -c '/dev/ttyUSB0' ]; then
+    dialout_group=$(ls -l /dev/ttyUSB0|awk '{print $4}')
+  elif [ -c '/dev/ttyS0' ]; then
+    dialout_group=$(ls -l /dev/ttyS0  |awk '{print $4}')
+  elif [ -c '/dev/ttyS1' ]; then
+    dialout_group=$(ls -l /dev/ttyS1  |awk '{print $4}')
+  elif [ -c '/dev/ttyS2' ]; then
+    dialout_group=$(ls -l /dev/ttyS2  |awk '{print $4}')
+  fi
+  sudo gpasswd -a $USER $dialout_group
+}
+
+main () {
+  source /etc/os-release
+  echo "Detected os=$NAME"
+  
+  if [ "$NAME" == "Arch Linux" ]; then
+    arch_install
+  elif [ "$NAME" == "Debian GNU/Linux" ]; then
+    apt-get_install
+  elif [ "$NAME" == "Ubuntu" ]; then
+    apt-get_install
+  elif [ "$NAME" == "CentOS Linux" ]; then
+    yum_install
+  fi
+  
+  groupie
+  dotfiles_install
+  esp_dir
+  echo "Installation finished"
+}
+
+time main "$@"
