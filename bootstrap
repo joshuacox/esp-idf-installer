@@ -47,14 +47,16 @@ dotfiles_install () {
   echo 'Adjusting dotfiles'
   touch $HOME/.zshrc
   touch $HOME/.bashrc
-  ESP_BIN='export PATH="$HOME/esp/xtensa-esp32-elf/bin:$PATH"'
+  ESP_BIN="$HOME/esp/xtensa-esp32-elf/bin"
   LINE_TO_ADD="$(printf "export PATH=%s:\$PATH" $ESP_BIN)"
+  echo $LINE_TO_ADD
   TARGET_FILE_FOR_ADD=$HOME/.bashrc
   check_if_line_exists || add_line_to
   TARGET_FILE_FOR_ADD=$HOME/.zshrc
   check_if_line_exists || add_line_to
-  IDF_BIN='export IDF_PATH=~/esp/esp-idf'
-  LINE_TO_ADD="$(printf "export PATH=%s:\$PATH" $IDF_BIN)"
+  IDF_BIN="IDF_PATH=~/esp/esp-idf"
+  LINE_TO_ADD="$IDF_BIN"
+  echo $LINE_TO_ADD
   TARGET_FILE_FOR_ADD=$HOME/.bashrc
   check_if_line_exists || add_line_to
   TARGET_FILE_FOR_ADD=$HOME/.zshrc
@@ -138,8 +140,7 @@ main () {
   echo "Detected os=$NAME"
   
   if [ "$NAME" == "Arch Linux" ]; then
-    #arch_install
-    echo skiparch
+    arch_install
   elif [ "$NAME" == "Debian GNU/Linux" ]; then
     apt_get_install
   elif [ "$NAME" == "Ubuntu" ]; then
