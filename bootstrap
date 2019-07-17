@@ -1,4 +1,12 @@
 #!/bin/bash
+if [[ "$1" == '-y' ]]; then
+  echo YES
+  YES='-y'
+  YES_ARCH='--noconfirm'
+else
+  YES=' '
+  YES_ARCH=' '
+fi
 : ${VERBOSITY:=0}
 set -eu
 if [ "$VERBOSITY" -gt 100 ]; then
@@ -9,14 +17,6 @@ if [ "$MACHINE_NAME" == "x86_64" ]; then
 : ${XTENSA_URL='https://dl.espressif.com/dl/xtensa-esp32-elf-gcc8_2_0-esp32-2019r1-linux-amd64.tar.gz'}
 else
 : ${XTENSA_URL='https://dl.espressif.com/dl/xtensa-esp32-elf-gcc8_2_0-esp32-2019r1-linux-i686.tar.gz'}
-fi
-if [[ "$1" == '-y' ]]; then
-  echo YES
-  YES='-y'
-  YES_ARCH='--noconfirm'
-else
-  YES=' '
-  YES_ARCH=' '
 fi
 export IDF_PATH=~/esp/esp-idf
 

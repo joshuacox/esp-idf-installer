@@ -12,7 +12,7 @@ bootstrap_ubuntu:
     - whoami
     - printenv
     - apt-get update; apt-get install -y sudo
-    - ./bootstrap
+    - ./bootstrap -y
 
 bootstrap_centos7:
   image: centos:7
@@ -20,7 +20,7 @@ bootstrap_centos7:
   script:
     - whoami
     - printenv
-    - ./bootstrap
+    - ./bootstrap -y
 
 bootstrap_arch:
   image: archlinux/base
@@ -28,4 +28,4 @@ bootstrap_arch:
   script:
     - whoami
     - printenv
-    - ./bootstrap
+    - ./bootstrap -y
