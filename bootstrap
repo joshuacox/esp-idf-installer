@@ -127,7 +127,7 @@ arch_install () {
   echo Starting Arch installation
   ARCH_PKGS_INSTALL='gcc git make ncurses curl flex bison gperf python2-pyserial python2-cryptography python2-future python2-pyparsing python2-pyelftools'
   sudo pacman -Sy
-  sudo pacman $YES_ARCH -Su
+  sudo pacman -Su $YES_ARCH
   sudo powerpill $YES_ARCH -S --needed $ARCH_PKGS_INSTALL
   gpg --recv-keys 702353E0F7E48EDB
   bauer_build ncurses5-compat-libs
