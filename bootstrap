@@ -100,12 +100,12 @@ esp_dir () {
 
 apt_get_install () {
   sudo apt-get update
-  sudo apt-get $YES install gcc git wget make libncurses-dev flex bison gperf python python-pip python-setuptools python-serial python-cryptography python-future python-pyparsing python-pyelftools
+  sudo apt-get $YES install gcc git curl wget make libncurses-dev flex bison gperf python python-pip python-setuptools python-serial python-cryptography python-future python-pyparsing python-pyelftools
 }
 
 yum_install () {
   sudo yum $YES update
-  sudo yum $YES install gcc git wget make ncurses-devel flex bison gperf python python2-cryptography
+  sudo yum $YES install gcc git wget curl make ncurses-devel flex bison gperf python python2-cryptography
 }
 
 bauer_build () {
@@ -125,7 +125,7 @@ arch_install () {
   check_cmd powerpill
   check_cmd bauerbill
   echo Starting Arch installation
-  ARCH_PKGS_INSTALL='gcc git make ncurses flex bison gperf python2-pyserial python2-cryptography python2-future python2-pyparsing python2-pyelftools'
+  ARCH_PKGS_INSTALL='gcc git make ncurses curl flex bison gperf python2-pyserial python2-cryptography python2-future python2-pyparsing python2-pyelftools'
   sudo pacman -Sy
   sudo pacman $YES_ARCH -Su
   sudo powerpill $YES_ARCH -S --needed $ARCH_PKGS_INSTALL
