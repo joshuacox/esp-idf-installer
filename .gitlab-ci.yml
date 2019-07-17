@@ -1,0 +1,30 @@
+default:
+  image: ubuntu:bionic
+
+stages:
+  - ubuntu
+  - centos
+  - arch
+
+bootstrap_ubuntu:
+  stage: ubuntu
+  script:
+    - whoami
+    - printenv
+    - ./bootstrap -y
+
+bootstrap_centos7:
+  image: centos:7
+  stage: centos
+  script:
+    - whoami
+    - printenv
+    - ./bootstrap -y
+
+bootstrap_arch:
+  image: archlinux/base
+  stage: arch
+  script:
+    - whoami
+    - printenv
+    - ./bootstrap -y
