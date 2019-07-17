@@ -30,5 +30,7 @@ bootstrap_arch:
     - whoami
     - printenv
     - cat ./xyne.pac >> /etc/pacman.conf
-    - pacman -Sy; pacman -S --noconfirm sudo powerpill bauerbill
+    - pacman -Sy
+    - pacman -Su
+    - pacman -S --noconfirm sudo powerpill bauerbill
     - ./bootstrap -y
