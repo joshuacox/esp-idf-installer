@@ -115,7 +115,11 @@ bauer_build () {
   bauerbill $YES_ARCH --aur -S $PKG_TO_BUILD
   cd build
   ./download.sh
-  ./build.sh
+  if [[ "$YES_ARCH" == "--noconfirm" ]]; then
+    yes M | ./build.sh
+  else
+    ./build.sh
+  fi
   cd
   rm -Rf $TMP
   unset TMP
