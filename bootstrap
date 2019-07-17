@@ -10,6 +10,14 @@ if [ "$MACHINE_NAME" == "x86_64" ]; then
 else
 : ${XTENSA_URL='https://dl.espressif.com/dl/xtensa-esp32-elf-gcc8_2_0-esp32-2019r1-linux-i686.tar.gz'}
 fi
+if [[ "$1" == '-y' ]]; then
+  echo YES
+  YES='-y'
+  YES_ARCH='--noconfirm'
+else
+  YES=' '
+  YES_ARCH=' '
+fi
 export IDF_PATH=~/esp/esp-idf
 
 # Check if a command exists
@@ -89,19 +97,19 @@ esp_dir () {
 
 apt_get_install () {
   sudo apt-get update
-  sudo apt-get install gcc git wget make libncurses-dev flex bison gperf python python-pip python-setuptools python-serial python-cryptography python-future python-pyparsing python-pyelftools
+  sudo apt-get $YES install gcc git wget make libncurses-dev flex bison gperf python python-pip python-setuptools python-serial python-cryptography python-future python-pyparsing python-pyelftools
 }
 
 yum_install () {
-  sudo yum update
-  sudo yum install gcc git wget make ncurses-devel flex bison gperf python python2-cryptography
+  sudo yum $YES update
+  sudo yum $YES install gcc git wget make ncurses-devel flex bison gperf python python2-cryptography
 }
 
 bauer_build () {
   TMP=$(mktemp -d)
   PKG_TO_BUILD=$1
   cd $TMP
-  bauerbill --aur -S $PKG_TO_BUILD
+  bauerbill $YES_ARCH --aur -S $PKG_TO_BUILD
   cd build
   ./download.sh
   ./build.sh
@@ -116,8 +124,9 @@ arch_install () {
   echo Starting Arch installation
   ARCH_PKGS_INSTALL='gcc git make ncurses flex bison gperf python2-pyserial python2-cryptography python2-future python2-pyparsing python2-pyelftools'
   sudo pacman -Sy
-  sudo pacman -Su
-  sudo powerpill -S --needed $ARCH_PKGS_INSTALL
+  sudo pacman $YES_ARCH -Su
+  sudo powerpill $YES_ARCH -S --needed $ARCH_PKGS_INSTALL
+  gpg --recv-keys 702353E0F7E48EDB
   bauer_build ncurses5-compat-libs
   bauer_build lib32-ncurses5-compat-libs
 }
