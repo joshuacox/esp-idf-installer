@@ -11,6 +11,7 @@ bootstrap_ubuntu:
   script:
     - whoami
     - printenv
+    - apt-get update; apt-get install -y sudo
     - ./bootstrap
 
 bootstrap_centos7:
