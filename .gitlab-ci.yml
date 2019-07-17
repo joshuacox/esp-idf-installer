@@ -2,9 +2,9 @@ default:
   image: ubuntu:bionic
 
 stages:
-  - ubuntu
-  - centos
   - arch
+  - centos
+  - ubuntu
 
 bootstrap_ubuntu:
   stage: ubuntu
