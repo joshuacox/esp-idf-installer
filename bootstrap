@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 : ${VERBOSITY:=0}
 set -eu
 if [ "$VERBOSITY" -gt 100 ]; then
