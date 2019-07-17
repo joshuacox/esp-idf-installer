@@ -11,7 +11,7 @@ bootstrap_ubuntu:
   script:
     - whoami
     - printenv
-    - ./bootstrap -y
+    - ./bootstrap
 
 bootstrap_centos7:
   image: centos:7
@@ -19,7 +19,7 @@ bootstrap_centos7:
   script:
     - whoami
     - printenv
-    - ./bootstrap -y
+    - ./bootstrap
 
 bootstrap_arch:
   image: archlinux/base
@@ -27,4 +27,4 @@ bootstrap_arch:
   script:
     - whoami
     - printenv
-    - ./bootstrap -y
+    - ./bootstrap

@@ -155,4 +155,4 @@ main () {
   echo "Installation finished"
 }
 
-time main "$@"
+main "$@"
