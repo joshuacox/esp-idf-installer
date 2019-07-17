@@ -29,5 +29,6 @@ bootstrap_arch:
   script:
     - whoami
     - printenv
-    - pacman -Sy; pacman -S --noconfirm sudo
+    - cat ./xyne.pac >> /etc/pacman.conf
+    - pacman -Sy; pacman -S --noconfirm sudo powerpill bauerbill
     - ./bootstrap -y
