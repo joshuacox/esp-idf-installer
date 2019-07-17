@@ -20,6 +20,7 @@ bootstrap_centos7:
   script:
     - whoami
     - printenv
+    - yum -y update; yum install -y sudo
     - ./bootstrap -y
 
 bootstrap_arch:
@@ -28,4 +29,5 @@ bootstrap_arch:
   script:
     - whoami
     - printenv
+    - pacman -Sy; pacman -S --noconfirm sudo
     - ./bootstrap -y
