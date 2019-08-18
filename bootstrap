@@ -126,6 +126,8 @@ bauer_build () {
 }
 
 arch_install () {
+  THIS_TMP=$(mktemp -d)
+  cd $THIS_TMP
   check_cmd powerpill
   check_cmd bauerbill
   echo Starting Arch installation
@@ -134,8 +136,6 @@ arch_install () {
   gpg --recv-keys 702353E0F7E48EDB
   gpg --recv-keys BBE43771487328A9
   if [[ "$YES_ARCH" == "--noconfirm" ]]; then
-    THIS_TMP=$(mktemp -d)
-    cd $THIS_TMP
     wget -qc https://raw.githubusercontent.com/gik0geck0/aur_install/master/aur_install.sh
     chmod +x aur_install.sh
     ./aur_install.sh ncurses5-compat-libs
